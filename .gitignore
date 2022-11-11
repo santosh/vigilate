@@ -8,5 +8,5 @@ vigilate
 *.code-workspace
 
 
-/ipe
+/ipe/ipe
 /static/admin/fonts
