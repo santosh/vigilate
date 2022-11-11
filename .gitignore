@@ -8,6 +8,5 @@ vigilate
 *.code-workspace
 
 
-/soda_binaries
 /ipe
 /static/admin/fonts

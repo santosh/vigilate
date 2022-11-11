@@ -2,16 +2,17 @@ package main
 
 import (
 	"encoding/gob"
-	"github.com/alexedwards/scs/v2"
-	"github.com/pusher/pusher-http-go"
-	"github.com/tsawler/vigilate/internal/config"
-	"github.com/tsawler/vigilate/internal/handlers"
-	"github.com/tsawler/vigilate/internal/models"
 	"log"
 	"net/http"
 	"os"
 	"runtime"
 	"time"
+
+	"github.com/alexedwards/scs/v2"
+	"github.com/pusher/pusher-http-go"
+	"github.com/tsawler/vigilate/internal/config"
+	"github.com/tsawler/vigilate/internal/handlers"
+	"github.com/tsawler/vigilate/internal/models"
 )
 
 var app config.AppConfig
@@ -26,7 +27,7 @@ const maxJobMaxWorkers = 5
 
 func init() {
 	gob.Register(models.User{})
-	_ = os.Setenv("TZ", "America/Halifax")
+	_ = os.Setenv("TZ", "Asia/Kolkata")
 }
 
 // main is the application entry point
