@@ -2,6 +2,11 @@ package handlers
 
 import (
 	"fmt"
+	"log"
+	"net/http"
+	"runtime/debug"
+	"strconv"
+
 	"github.com/CloudyKit/jet/v6"
 	"github.com/go-chi/chi"
 	"github.com/tsawler/vigilate/internal/config"
@@ -10,13 +15,9 @@ import (
 	"github.com/tsawler/vigilate/internal/models"
 	"github.com/tsawler/vigilate/internal/repository"
 	"github.com/tsawler/vigilate/internal/repository/dbrepo"
-	"log"
-	"net/http"
-	"runtime/debug"
-	"strconv"
 )
 
-//Repo is the repository
+// Repo is the repository
 var Repo *DBRepo
 var app *config.AppConfig
 
@@ -131,6 +132,11 @@ func (repo *DBRepo) Host(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		printTemplateError(w, err)
 	}
+}
+
+// PostHost handles posting of host form and saving into DB
+func (repo *DBRepo) PostHost(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("posted form"))
 }
 
 // AllUsers lists all admin users
