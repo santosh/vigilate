@@ -1,0 +1,6 @@
+{
+    "editor.detectIndentation": false,
+    "[html]": {
+        "editor.tabSize": 2
+      },
+}
