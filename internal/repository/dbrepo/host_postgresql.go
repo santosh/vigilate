@@ -71,11 +71,11 @@ func (m *postgresDBRepo) GetHostByID(id int) (models.Host, error) {
 	return h, nil
 }
 
-func (m *postgresDBRepo) UpdateHostByID(h models.Host) error {
+func (m *postgresDBRepo) UpdateHost(h models.Host) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	stmt := `update hosts set host_name = $1, canonical_name = $2, url = $3, ip = $4, ipv6 = $4, location = $5, os = $6, active = $7, updated_at = $8 where id = $9`
+	stmt := `update hosts set host_name = $1, canonical_name = $2, url = $3, ip = $4, ipv6 = $5, location = $6, os = $7, active = $8, updated_at = $9 where id = $10`
 
 	_, err := m.DB.ExecContext(ctx, stmt,
 		h.HostName,
