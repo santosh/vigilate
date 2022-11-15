@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -203,7 +204,35 @@ func (repo *DBRepo) PostHost(w http.ResponseWriter, r *http.Request) {
 
 	repo.App.Session.Put(r.Context(), "flash", "Changes saved")
 	http.Redirect(w, r, fmt.Sprintf("/admin/host/%d", h.ID), http.StatusSeeOther)
+}
 
+type serviceJSON struct {
+	OK bool `json:"ok"`
+}
+
+// ToggleServiceForHost turns a host service on or off (active or inactive)
+func (repo *DBRepo) ToggleServiceForHost(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		log.Println(err)
+	}
+
+	hostID, _ := strconv.Atoi(r.Form.Get("host_id"))
+	serviceID, _ := strconv.Atoi(r.Form.Get("service_id"))
+	active, _ := strconv.Atoi(r.Form.Get("active"))
+
+	var resp serviceJSON
+	err = repo.DB.UpdateHostServiceStatus(hostID, serviceID, active)
+	if err != nil {
+		log.Println(err)
+		resp.OK = false
+	}
+
+	resp.OK = true
+
+	out, _ := json.MarshalIndent(resp, "", "  ")
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(out)
 }
 
 // AllUsers lists all admin users

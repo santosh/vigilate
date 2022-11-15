@@ -127,7 +127,35 @@ Host
         {{ if host.ID > 0 }}
         <div class="tab-pane fade" role="tabpanel" aria-labelledby="services-tab"
           id="service-content">
-          Services content
+          <div class="row">
+            <div class="col">
+              <h3 class="mt-3">Services</h3>
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Services</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>HTTP</td>
+                    <td>
+                      <div class="form-check form-switch">
+                        <label class="form-check-label" for="active">Active</label>
+                        <input class="form-check-input" type="checkbox" value="1"
+                          id="http_service"
+                          data-type="toggle-service"
+                          data-service="1"
+                          data-host-id="{{ host.ID }}"
+                          name="http">
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
 
         <div class="tab-pane fade" role="tabpanel" aria-labelledby="healthy-tab"
@@ -159,6 +187,35 @@ Host
 
 {{ block js() }}
 <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    let toggles = document.querySelectorAll("[data-service]")
+    for (let i = 0; i < toggles.length; i++) {
+      toggles[i].addEventListener("change", function () {
+
+        let active = this.checked ? "1" : "0"
+
+        let formData = new FormData()
+        formData.append("host_id", this.getAttribute("data-host-id"))
+        formData.append("service_id", this.getAttribute("data-service"))
+        formData.append("active", active)
+        formData.append("csrf_token", "{{ .CSRFToken }}")
+
+        fetch("/admin/host/ajax/toggle-service", {
+          method: "POST",
+          body: formData,
+        })
+          .then(response => response.json())
+          .then(data => {
+            if (data.ok) {
+              successAlert("Changes saved")
+            } else {
+              errorAlert("Something went wrong")
+            }
+          })
+      })
+    }
+  })
+
   function val() {
     document.getElementById("action").value = 0;
     let form = document.getElementById("host-form");
