@@ -46,6 +46,7 @@ func (m *postgresDBRepo) InsertHost(h models.Host) (int, error) {
 	return newID, nil
 }
 
+// GetHostByID returns a host of given HostID
 func (m *postgresDBRepo) GetHostByID(id int) (models.Host, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -126,6 +127,7 @@ func (m *postgresDBRepo) GetHostByID(id int) (models.Host, error) {
 	return h, nil
 }
 
+// UpdateHost takes in a models.Host and update relevant record on db
 func (m *postgresDBRepo) UpdateHost(h models.Host) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -153,6 +155,32 @@ func (m *postgresDBRepo) UpdateHost(h models.Host) error {
 	return nil
 }
 
+func (m *postgresDBRepo) GetAllServiceStatusCounts() (int, int, int, int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `select
+		(select count(id) from host_services where active = 1 and status = 'pending') as pending,
+		(select count(id) from host_services where active = 1 and status = 'healthy') as healthy,
+		(select count(id) from host_services where active = 1 and status = 'warning') as warning,
+		(select count(id) from host_services where active = 1 and status = 'problem') as problem`
+
+	var pending, healthy, warning, problem int
+
+	row := m.DB.QueryRowContext(ctx, query)
+	err := row.Scan(
+		&pending,
+		&healthy,
+		&warning,
+		&problem,
+	)
+	if err != nil {
+		return 0, 0, 0, 0, err
+	}
+
+	return pending, healthy, warning, problem, nil
+}
+
+// AllHosts returns a slice of hosts
 func (m *postgresDBRepo) AllHosts() ([]models.Host, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
