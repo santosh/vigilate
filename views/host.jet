@@ -182,7 +182,7 @@ Host
                     <td>
                       <span class="{{ .Service.Icon }}"></span>
                       {{ .Service.ServiceName }}
-                      <span class="badge bg-secondary" onclick="checkNow({{ .ID }})">Check Now</span>
+                      <span class="badge bg-secondary" onclick="checkNow({{ .ID }}, 'healthy')">Check Now</span>
                     </td>
                     <td>
                       {{ if dateAfterYearOne(.LastCheck) }}
@@ -221,7 +221,7 @@ Host
                     <td>
                       <span class="{{ .Service.Icon }}"></span>
                       {{ .Service.ServiceName }}
-                      <span class="badge bg-secondary" onclick="checkNow({{ .ID }})">Check Now</span>
+                      <span class="badge bg-secondary" onclick="checkNow({{ .ID }}, 'warning')">Check Now</span>
                     </td>
                     <td>
                       {{ if dateAfterYearOne(.LastCheck) }}
@@ -260,7 +260,7 @@ Host
                     <td>
                       <span class="{{ .Service.Icon }}"></span>
                       {{ .Service.ServiceName }}
-                      <span class="badge bg-secondary" onclick="checkNow({{ .ID }})">Check Now</span>
+                      <span class="badge bg-secondary" onclick="checkNow({{ .ID }}, 'problem')">Check Now</span>
                     </td>
                     <td>
                       {{ if dateAfterYearOne(.LastCheck) }}
@@ -299,7 +299,7 @@ Host
                     <td>
                       <span class="{{ .Service.Icon }}"></span>
                       {{ .Service.ServiceName }}
-                      <span class="badge bg-secondary" onclick="checkNow({{ .ID }})">Check Now</span>
+                      <span class="badge bg-secondary" onclick="checkNow({{ .ID }}, 'pending')">Check Now</span>
                     </td>
                     <td>
                       {{ if dateAfterYearOne(.LastCheck) }}
@@ -387,8 +387,13 @@ Host
     }
   }
 
-  function checkNow(id) {
+  function checkNow(id, oldStatus) {
     console.log("Clicked check now");
+    fetch(`/admin/perform-check/${id}/${oldStatus}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log("Ok:", data.ok, "messaeg:", data.message)
+      })
   }
 </script>
 
