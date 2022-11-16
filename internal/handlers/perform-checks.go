@@ -23,7 +23,7 @@ type jsonResp struct {
 	OK            bool      `json:"ok"`
 	Message       string    `json:"message"`
 	ServiceID     int       `json:"service_id"`
-	HostServiceId int       `json:"host_service_id"`
+	HostServiceID int       `json:"host_service_id"`
 	HostID        int       `json:"host_id"`
 	OldStatus     string    `json:"old_status"`
 	NewStatus     string    `json:"new_status"`
@@ -33,31 +33,45 @@ type jsonResp struct {
 func (repo *DBRepo) TestCheck(w http.ResponseWriter, r *http.Request) {
 	hostServiceId, _ := strconv.Atoi(chi.URLParam(r, "id"))
 	oldStatus := chi.URLParam(r, "oldStatus")
-
-	log.Println(hostServiceId, oldStatus)
+	okay := true
 
 	// get host service
 	hs, err := repo.DB.GetHostServiceById(hostServiceId)
 	if err != nil {
 		log.Println(err)
-		return
+		okay = false
 	}
 
 	// get host?
 	h, err := repo.DB.GetHostByID(hs.HostID)
 	if err != nil {
 		log.Println(err)
-		return
+		okay = false
 	}
 
 	// test the service
 	msg, newStatus := repo.testServiceForHost(h, hs)
-	log.Println(msg, newStatus)
+
+	// update the host service in the database with status (if changed) and last check
+
+	// broadcast serivce status changed event
 
 	// create json
-	resp := jsonResp{
-		OK:      true,
-		Message: "test message",
+	var resp jsonResp
+	if okay {
+		resp = jsonResp{
+			OK:            okay,
+			Message:       msg,
+			ServiceID:     hs.ServiceID,
+			HostServiceID: hs.ID,
+			HostID:        hs.HostID,
+			OldStatus:     oldStatus,
+			NewStatus:     newStatus,
+			LastCheck:     time.Now(),
+		}
+	} else {
+		resp.OK = false
+		resp.Message = "Something went wrong"
 	}
 
 	// send json to client
