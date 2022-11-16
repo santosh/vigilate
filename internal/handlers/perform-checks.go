@@ -28,6 +28,13 @@ func (repo *DBRepo) TestCheck(w http.ResponseWriter, r *http.Request) {
 	log.Println(hostServiceId, oldStatus)
 
 	// get host service
+	hs, err := repo.DB.GetHostServiceById(hostServiceId)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	log.Println("Service name is", hs.Service.ServiceName)
 
 	// get host?
 

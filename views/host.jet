@@ -2,6 +2,9 @@
 
 {{block css()}}
 <style>
+  .pointer {
+    cursor: pointer;
+  }
 
 </style>
 {{end}}
@@ -182,7 +185,7 @@ Host
                     <td>
                       <span class="{{ .Service.Icon }}"></span>
                       {{ .Service.ServiceName }}
-                      <span class="badge bg-secondary" onclick="checkNow({{ .ID }}, 'healthy')">Check Now</span>
+                      <span class="badge bg-secondary pointer" onclick="checkNow({{ .ID }}, 'healthy')">Check Now</span>
                     </td>
                     <td>
                       {{ if dateAfterYearOne(.LastCheck) }}
@@ -221,7 +224,7 @@ Host
                     <td>
                       <span class="{{ .Service.Icon }}"></span>
                       {{ .Service.ServiceName }}
-                      <span class="badge bg-secondary" onclick="checkNow({{ .ID }}, 'warning')">Check Now</span>
+                      <span class="badge bg-secondary pointer" onclick="checkNow({{ .ID }}, 'warning')">Check Now</span>
                     </td>
                     <td>
                       {{ if dateAfterYearOne(.LastCheck) }}
@@ -260,7 +263,7 @@ Host
                     <td>
                       <span class="{{ .Service.Icon }}"></span>
                       {{ .Service.ServiceName }}
-                      <span class="badge bg-secondary" onclick="checkNow({{ .ID }}, 'problem')">Check Now</span>
+                      <span class="badge bg-secondary pointer" onclick="checkNow({{ .ID }}, 'problem')">Check Now</span>
                     </td>
                     <td>
                       {{ if dateAfterYearOne(.LastCheck) }}
@@ -299,7 +302,7 @@ Host
                     <td>
                       <span class="{{ .Service.Icon }}"></span>
                       {{ .Service.ServiceName }}
-                      <span class="badge bg-secondary" onclick="checkNow({{ .ID }}, 'pending')">Check Now</span>
+                      <span class="badge bg-secondary pointer" onclick="checkNow({{ .ID }}, 'pending')">Check Now</span>
                     </td>
                     <td>
                       {{ if dateAfterYearOne(.LastCheck) }}
