@@ -32,7 +32,38 @@ type jsonResp struct {
 
 // ScheduledCheck performs a scheduled check on a host service by id
 func (repo *DBRepo) ScheduledCheck(hostServiceID int) {
+	log.Println("************* Running check for", hostServiceID)
 
+	hs, err := repo.DB.GetHostServiceById(hostServiceID)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	h, err := repo.DB.GetHostByID(hs.HostID)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	// test the service
+	newStatus, msg := repo.testServiceForHost(h, hs)
+
+	// update host service record in db with status (if changed)
+	// update the last check
+	hs.Status = newStatus
+	hs.LastCheck = time.Now()
+	err = repo.DB.UpdateHostService(hs)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	// if the host service status has changed, broadcast to all clients
+
+	// if appropriate, send emails or SMS message
+
+	log.Println("newStatus:", newStatus, "msg:", msg)
 }
 
 func (repo *DBRepo) TestCheck(w http.ResponseWriter, r *http.Request) {
