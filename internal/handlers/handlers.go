@@ -254,8 +254,6 @@ func (repo *DBRepo) SetSystemPref(w http.ResponseWriter, r *http.Request) {
 	prefName := r.PostForm.Get("pref_name")
 	prefValue := r.PostForm.Get("pref_value")
 
-	log.Println("prefs:", prefName, prefValue)
-
 	var resp jsonResp
 	resp.OK = true
 	resp.Message = ""
@@ -266,7 +264,49 @@ func (repo *DBRepo) SetSystemPref(w http.ResponseWriter, r *http.Request) {
 		resp.Message = err.Error()
 	}
 
+	repo.App.PreferenceMap["monitoring_live"] = prefValue
+
 	out, _ := json.MarshalIndent(resp, "", "  ")
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(out)
+}
+
+// ToggleMonitoring turns monitoring on and off
+func (repo *DBRepo) ToggleMonitoring(w http.ResponseWriter, r *http.Request) {
+	enabled := r.PostForm.Get("enabled")
+
+	if enabled == "1" {
+		// start monitoring
+		log.Println("Turning monitoring on")
+		repo.App.Scheduler.Start()
+	} else {
+		// stop monitoring
+		log.Println("Turning monitoring off")
+
+		// remove all ites in map from schedule
+		for _, entry := range repo.App.MonitorMap {
+			repo.App.Scheduler.Remove(entry)
+		}
+
+		// empty the map
+		for k := range repo.App.MonitorMap {
+			delete(repo.App.MonitorMap, k)
+		}
+
+		// delete all entries from schedule, to be sure
+		for _, i := range repo.App.Scheduler.Entries() {
+			repo.App.Scheduler.Remove(i.ID)
+		}
+
+		repo.App.Scheduler.Stop()
+	}
+
+	var resp jsonResp
+	resp.OK = true
+	resp.Message = ""
+
+	out, _ := json.MarshalIndent(resp, "", "  ")
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(out)
 }
