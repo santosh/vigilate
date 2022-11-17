@@ -18,14 +18,22 @@
         successAlert(data.message)
     })
 
-    // - service goes down
+    // - monitoring is turned off
     publicChannel.bind("app-stopping", function(data) {
         warningAlert(data.message)
     })
 
     // - service status changed
+    // - service goes down
+    publicChannel.bind("host-service-status-changed", function(data) {
+        if (data.newStatus == "problem") {
+            warningAlert(data.message)
+        } else {
+            successAlert(data.message)
+        }
+    })
+
     // - scheduled changed
-    // - monitoring is turned off
     // - next-run-event changes
 
     let attention = Prompt();
