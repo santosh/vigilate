@@ -53,7 +53,24 @@
     })
 
     function updateSystemPref(prefName, prefValue) {
+        let formData = new FormData()
+        formData.append("pref_name", prefName)
+        formData.append("pref_value", prefValue)
+        formData.append("csrf_token", "{{ .CSRFToken }}")
 
+        let ajax = new XMLHttpRequest()
+        ajax.responseType = "json"
+        ajax.open("POST", "/admin/preference/ajax/set-system-pref")
+        ajax.send(formData)
+
+        ajax.onreadystatechange = function() {
+            if (ajax.readyState === 4) {
+                let resp = ajax.response;
+                if (!resp.ok) {
+                    errorAlert("Errors: " + resp.message)
+                }
+            }
+        }
     }
 
     function toggleMonitoring(enabled) {
