@@ -28,4 +28,35 @@
     {{if .Error != ""}}
         errorAlert('{{.Error}}')
     {{end}}
+
+    let monitoringLiveInput = document.getElementById("monitoring-live")
+    monitoringLiveInput.addEventListener("change", function () {
+        let enabled = monitoringLiveInput.checked
+        if (!enabled) {
+            attention.confirm({
+                html: "This will stop monitoring of all hosts and services. Are you sure?",
+                callback: function(result) {
+                    if (result) {
+                        // want to turn monitoring off
+                        console.log("Would turn monitoring off")
+                        updateSystemPref("monitoring-live", "0")
+                        toggleMonitoring(0)
+                    } else {
+                        monitoringLiveInput.checked = true
+                    }
+                }
+            })
+        } else {
+            updateSystemPref("monitoring-live", "1")
+            toggleMonitoring(1)
+        }
+    })
+
+    function updateSystemPref(prefName, prefValue) {
+
+    }
+
+    function toggleMonitoring(enabled) {
+
+    }
 </script>
