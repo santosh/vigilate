@@ -278,6 +278,7 @@ func (repo *DBRepo) ToggleMonitoring(w http.ResponseWriter, r *http.Request) {
 	if enabled == "1" {
 		// start monitoring
 		log.Println("Turning monitoring on")
+		repo.StartMonitoring()
 		repo.App.Scheduler.Start()
 	} else {
 		// stop monitoring
