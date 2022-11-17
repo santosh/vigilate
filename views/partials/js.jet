@@ -38,8 +38,7 @@
                 callback: function(result) {
                     if (result) {
                         // want to turn monitoring off
-                        console.log("Would turn monitoring off")
-                        updateSystemPref("monitoring-live", "0")
+                        updateSystemPref("monitoring_live", "0")
                         toggleMonitoring(0)
                     } else {
                         monitoringLiveInput.checked = true
@@ -47,7 +46,7 @@
                 }
             })
         } else {
-            updateSystemPref("monitoring-live", "1")
+            updateSystemPref("monitoring_live", "1")
             toggleMonitoring(1)
         }
     })
