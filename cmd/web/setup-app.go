@@ -139,6 +139,8 @@ func setupApp() (*string, error) {
 	log.Println("Secure", *pusherSecure)
 
 	app.WsClient = wsClient
+	monitorMap := make(map[int]cron.EntryID)
+	app.MonitorMap = monitorMap
 	localZone, _ := time.LoadLocation("Local")
 	scheduler := cron.New(cron.WithLocation(localZone), cron.WithChain(
 		cron.DelayIfStillRunning(cron.DefaultLogger),
