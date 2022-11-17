@@ -10,10 +10,23 @@
         disabledTransports: [],
     })
 
+    // things we want to look for
     let publicChannel = pusher.subscribe("public-channel")
-    publicChannel.bind("test-event", function(data) {
+
+    // - service comes up
+    publicChannel.bind("app-starting", function(data) {
         successAlert(data.message)
     })
+
+    // - service goes down
+    publicChannel.bind("app-stopping", function(data) {
+        warningAlert(data.message)
+    })
+
+    // - service status changed
+    // - scheduled changed
+    // - monitoring is turned off
+    // - next-run-event changes
 
     let attention = Prompt();
 

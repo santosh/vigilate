@@ -19,7 +19,6 @@ func (j job) Run() {
 // StartMonitoring starts the monitoring process
 func (repo *DBRepo) StartMonitoring() {
 	if app.PreferenceMap["monitoring_live"] == "1" {
-		log.Println("************* starting monitoring **************")
 		// trigger a message to broadcast to all clients that app is strating to monitor
 		data := make(map[string]string)
 		data["message"] = "Monitoring is started..."
