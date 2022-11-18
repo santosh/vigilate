@@ -47,13 +47,18 @@ func (repo *DBRepo) ScheduledCheck(hostServiceID int) {
 	}
 
 	// test the service
-	newStatus, msg := repo.testServiceForHost(h, hs)
+	msg, newStatus := repo.testServiceForHost(h, hs)
+
+	hostServiceStatusChanged := false
+	if newStatus != hs.Status {
+		hostServiceStatusChanged = true
+	}
 
 	// if the host service status has changed, broadcast to all clients
-	if newStatus != hs.Status {
+	if hostServiceStatusChanged {
 		data := make(map[string]string)
 		data["message"] = fmt.Sprintf("host service %s on %s has changed to %s", hs.Service.ServiceName, h.HostName, newStatus)
-		data["newStatus"] = msg
+		data["newStatus"] = newStatus
 
 		repo.broadcastMessage("public-channel", "host-service-status-changed", data)
 
@@ -68,6 +73,21 @@ func (repo *DBRepo) ScheduledCheck(hostServiceID int) {
 	if err != nil {
 		log.Println(err)
 		return
+	}
+
+	if hostServiceStatusChanged {
+		pending, healthy, warning, problem, err := repo.DB.GetAllServiceStatusCounts()
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		data := make(map[string]string)
+		data["healthy_count"] = strconv.Itoa(healthy)
+		data["pending_count"] = strconv.Itoa(pending)
+		data["problem_count"] = strconv.Itoa(problem)
+		data["warning_count"] = strconv.Itoa(warning)
+		repo.broadcastMessage("public-channel", "host-service-count-changed", data)
 	}
 
 	log.Println("newStatus:", newStatus, "msg:", msg)

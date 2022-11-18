@@ -33,6 +33,17 @@
         }
     })
 
+    publicChannel.bind("host-service-count-changed", function(data){
+        let healthyCountSpan = document.getElementById("healthy_count")
+        let healthyCountExists = !!healthyCountSpan
+        if (healthyCountExists) {
+            healthyCountSpan.innerHTML = data.healthy_count;
+            document.getElementById("problem_count").innerHTML = data.problem_count;
+            document.getElementById("pending_count").innerHTML = data.pending_count;
+            document.getElementById("warning_count").innerHTML = data.warning_count;
+        }
+    })
+
     // - scheduled changed
     // - next-run-event changes
 
