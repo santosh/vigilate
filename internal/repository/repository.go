@@ -41,4 +41,5 @@ type DatabaseRepo interface {
 
 	// events
 	GetAllEvents() ([]models.Event, error)
+	InsertEvent(e models.Event) error
 }
