@@ -14,6 +14,7 @@ import (
 	"github.com/tsawler/vigilate/internal/channeldata"
 	"github.com/tsawler/vigilate/internal/helpers"
 	"github.com/tsawler/vigilate/internal/models"
+	"github.com/tsawler/vigilate/internal/sms"
 )
 
 const (
@@ -35,8 +36,6 @@ type jsonResp struct {
 
 // ScheduledCheck performs a scheduled check on a host service by id
 func (repo *DBRepo) ScheduledCheck(hostServiceID int) {
-	log.Println("************* Running check for", hostServiceID)
-
 	hs, err := repo.DB.GetHostServiceById(hostServiceID)
 	if err != nil {
 		log.Println(err)
@@ -218,7 +217,26 @@ func (repo *DBRepo) testServiceForHost(h models.Host, hs models.HostService) (st
 			}
 		}
 
-		// TODO - send sms if appropriate
+		// send sms if appropriate
+		if repo.App.PreferenceMap["notify_via_sms"] == "1" {
+			to := repo.App.PreferenceMap["sms_notify_number"]
+			msgBody := ""
+
+			if newStatus != "healthy" {
+				msgBody = fmt.Sprintf("Service %s on %s is healthy", hs.Service.ServiceName, hs.HostName)
+			} else if newStatus != "problem" {
+				msgBody = fmt.Sprintf("Service %s on %s reports a problem: %s", hs.Service.ServiceName, hs.HostName, msg)
+			} else if newStatus != "warning" {
+				msgBody = fmt.Sprintf("Service %s on %s reports a problem: %s", hs.Service.ServiceName, hs.HostName, msg)
+			}
+
+			err := sms.SendTextTwilio(to, msgBody, repo.App)
+			if err != nil {
+				log.Println("Error sending sms in perform-checks.go")
+			} else {
+				log.Println("SMS Sent")
+			}
+		}
 	}
 	repo.pushScheduleChangedEvent(hs, newStatus)
 
