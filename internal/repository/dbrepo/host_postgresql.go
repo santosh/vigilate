@@ -422,7 +422,7 @@ func (m *postgresDBRepo) GetServicesToMonitor() ([]models.HostService, error) {
 
 	query := `
 	select
-		hs.id, hs.host_id, hs.service_id, hs.active, hs.schedule_number, hs.schedule_unit, hs.last_check, hs.status, hs.created_at, hs.updated_at, s.id, s.service_name, s.active, s.icon, s.created_at, s.updated_at, h.host_name, hs.lastMessage
+		hs.id, hs.host_id, hs.service_id, hs.active, hs.schedule_number, hs.schedule_unit, hs.last_check, hs.status, hs.created_at, hs.updated_at, s.id, s.service_name, s.active, s.icon, s.created_at, s.updated_at, h.host_name, hs.last_message
 	from
 		host_services hs
 		left join services s on (hs.service_id = s.id)

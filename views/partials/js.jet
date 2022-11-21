@@ -12,6 +12,14 @@
 
     // things we want to look for
     let publicChannel = pusher.subscribe("public-channel")
+    let privateChannel = pusher.subscribe("private-channel-{{ .User.ID }}")
+
+    privateChannel.bind("private-message", function(data) {
+        attention.alert({
+            html: data.msg,
+            icon: 'success',
+        })
+    })
 
     // - service comes up
     publicChannel.bind("app-starting", function(data) {
