@@ -466,3 +466,50 @@ func (m *postgresDBRepo) GetServicesToMonitor() ([]models.HostService, error) {
 
 	return services, nil
 }
+
+// GetHostServiceByHostIdServiceID gets a host service by host and service id
+func (m *postgresDBRepo) GetHostServiceByHostIdServiceID(hostID, serviceID int) (models.HostService, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `
+	select
+		hs.id, hs.host_id, hs.service_id, hs.active, hs.schedule_number, hs.schedule_unit, hs.last_check, hs.status, hs.created_at, hs.updated_at, s.id, s.service_name, s.active, s.icon, s.created_at, s.updated_at, h.host_name
+	from
+		host_services hs
+		left join services s on (hs.service_id = s.id)
+		left join hosts h on (h.id = hs.host_id)
+	where
+		hs.service_id = $2 and hs.host_id = $1;`
+
+	var h models.HostService
+
+	row := m.DB.QueryRowContext(ctx, query, hostID, serviceID)
+
+	err := row.Scan(
+		&h.ID,
+		&h.HostID,
+		&h.ServiceID,
+		&h.Active,
+		&h.ScheduleNumber,
+		&h.ScheduleUnit,
+		&h.LastCheck,
+		&h.Status,
+		&h.CreatedAt,
+		&h.UpdatedAt,
+		&h.Service.ID,
+		&h.Service.ServiceName,
+		&h.Service.Active,
+		&h.Service.Icon,
+		&h.Service.CreatedAt,
+		&h.Service.UpdatedAt,
+		&h.HostName,
+	)
+
+	if err != nil {
+		log.Println(err)
+		return h, err
+	}
+
+	return h, nil
+}
