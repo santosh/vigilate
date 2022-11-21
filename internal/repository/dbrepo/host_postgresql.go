@@ -542,7 +542,7 @@ func (m *postgresDBRepo) InsertEvent(e models.Event) error {
 }
 
 // GetAllEvents fetches all the events from the database
-func (m *postgresDBRepo) GetAllEvents(e models.Event) ([]models.Event, error) {
+func (m *postgresDBRepo) GetAllEvents() ([]models.Event, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 

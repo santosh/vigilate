@@ -40,5 +40,5 @@ type DatabaseRepo interface {
 	GetHostServiceByHostIdServiceID(hostID, serviceID int) (models.HostService, error)
 
 	// events
-	GetAllEvents(e models.Event) ([]models.Event, error)
+	GetAllEvents() ([]models.Event, error)
 }
